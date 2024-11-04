@@ -12,7 +12,7 @@ class excessamount_Controller extends Controller
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -40,7 +40,7 @@ function encryption($data) {
     return $encoded;
 }
     function getExcessData(Request $req){
-        $decryptedResponse = $this->decryption($req);
+        $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -52,22 +52,22 @@ function encryption($data) {
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-     
+
       $final_excess_data = DB::table('Booking_Form')->where('BF_id',$id)->get();
       $excess_amount = DB::table('excess_table')->where('Ref_id',$id)->get('Ex_amount');
-      
+
       if($final_excess_data && $excess_amount){
           $returndata=array("status"=>"Success","excessdata"=>$final_excess_data,"excessAmount"=>$excess_amount);
-         $encryptedResponse = $this->encryption($returndata);
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-          
+
       }else{
            $returndata=array("status"=>"failure");
           $encryptedResponse = $this->encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-          
+
       }
 
-        
+
     }
 }

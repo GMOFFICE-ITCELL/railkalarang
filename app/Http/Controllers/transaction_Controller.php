@@ -13,7 +13,7 @@ class transaction_Controller extends Controller
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -42,13 +42,13 @@ function encryption($data) {
 }
 
 
-//get data function    
+//get data function
 function transaction_get(Request $req){
-    
-        
-        $transaction_data = DB::table('Transaction_table')->where('transaction_status',	
+
+
+        $transaction_data = DB::table('Transaction_table')->where('transaction_status',
 "SUCCESS")->where('level','1')->get();
-        
+
           if($transaction_data){
               $returndata= array("StatusResult"=>"success","transaction_table"=>$transaction_data);
               $encryptedResponse = $this->encryption($returndata);
@@ -58,8 +58,8 @@ function transaction_get(Request $req){
                $returndata= array("StatusResult"=>"failure");
                 $encryptedResponse = $this->encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
 
@@ -68,33 +68,33 @@ function transaction_get(Request $req){
 // }
 
 function tansaction_success(Request $req){
-    
-     $decryptedResponse = $this->decryption($req);
-        
+
+     $decryptedResponse = decryption($req);
+
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-    
+
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-   
+
      $allotlevel = DB::table('Transaction_table')->where('Ref_id',$id)->update([
          'level'=>"2"]);
          if($allotlevel){
          $returndata=array("status"=>"Success");
          $encryptedResponse = $this->encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
+
         }else{
             $returndata=array("status"=>"failure");
           $encryptedResponse = $this->encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
-        }   
-       
+
+        }
+
 }
 
 

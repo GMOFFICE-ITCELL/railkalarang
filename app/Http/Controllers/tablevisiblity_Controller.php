@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class tablevisiblity_Controller extends Controller
 {
-    
+
 //for decryption
 function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -43,12 +43,15 @@ function encryption($data) {
     return $encoded;
 }
 
-//get data function    
+//get data function
 function tablevisible(Request $req){
-    
-        
-        $book_data = DB::table('Booking_Form')->where('verification',NULL)->where('doc_status',"success")->get();
-        
+
+
+        $book_data = DB::table('Booking_Form')
+//            ->where('verification',NULL)
+//            ->where('doc_status',"success")
+            ->get();
+
           if($book_data){
               $returndata= array("StatusResult"=>"success","book_table"=>$book_data);
               $encryptedResponse = $this->encryption($returndata);
@@ -58,21 +61,21 @@ function tablevisible(Request $req){
                $returndata= array("StatusResult"=>"failure");
                 $encryptedResponse = $this->encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
-//delete function    
+
+//delete function
     function bookingdelete(Request $req){
-          $decryptdt=$this->decryption($req);
+          $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-    
+
         // $id=$req->id;
         $value=DB::table('Booking_Form')->where('BF_id', $id)->delete();
         if($value){
@@ -86,16 +89,16 @@ function tablevisible(Request $req){
                 return  array("return_response"=>$encryptedResponse);
         }
     }
-    
+
     function dialogueData(Request $req){
-          $decryptdt=$this->decryption($req);
+          $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-    
+
         // $id=$req->id;
         $value=DB::table('Booking_Form')->where('BF_id', $id)->get();
         if(count($value)>0){
@@ -109,5 +112,5 @@ function tablevisible(Request $req){
                 return  array("return_response"=>$encryptedResponse);
         }
     }
-    
-} 
+
+}

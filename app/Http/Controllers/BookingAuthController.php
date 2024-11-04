@@ -2,50 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookingForm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-
-class userlogin_Controller extends Controller
+class BookingAuthController extends Controller
 {
 
-    function decryption($req)
-    {
-        $encryptedData = $req->input('encryptedData');
-        $key = '452c55d16a18f2ac049b2ec24637571a';
-        $iv = 'cetksum*rkj#4202';
 
-        if ($decodedData = base64_decode($encryptedData, true)) {
-            $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-            if ($decryptedJson === false) {
-                return response()->json(['error' => 'Decryption failed']);
-            }
-
-            $decryptedArray = json_decode($decryptedJson, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return response()->json(['error' => 'JSON decoding failed']);
-            }
-
-            return $decryptedArray; // Directly return the decrypted array
-        } else {
-            return response()->json(['error' => 'Invalid encoded data']);
-        }
-    }
-
-
-    function encryption($data)
-    {
-        $key = '452c55d16a18f2ac049b2ec24637571a';
-        $iv = 'cetksum*rkj#4202';
-        $json_data = json_encode($data);
-        $encrypted = openssl_encrypt($json_data, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-        $encoded = base64_encode($encrypted);
-
-        return $encoded;
-    }
-
-
-    function send_mobile(Request $req)
+    public function verifyamenityotp(Request $request)
     {
 
         $decryptedResponse = decryption($req);
@@ -61,26 +28,69 @@ class userlogin_Controller extends Controller
 
         $jsonString = $decryptedResponse ?? '';
         $dataArray = json_decode($jsonString, true);
-        $bid = $dataArray['bid'];
+        $mobile = $dataArray['Mob_no'];
+        $id = $dataArray['BF_id'];
+        $token = $dataArray['token'];
+        $verigyOtp = $dataArray['verotp'];
+
+
+//  $mobile= (string) $req->Mob_no;
+//  $id=$req->BF_id;
+
+
+        $tbl = DB::Table('otp_table')->where('token', $token)->where('otp', $verigyOtp)->get();
+
+        if (count($tbl) > 0) {
+
+            //   $data =DB::table('Booking_Form')->where('Mob_no',$mobile)->get();
+
+            //   return array("status"=>"verified","getpayment"=>$mobile,"id"=>$id);
+
+
+            $returndata = array("status" => "verified", "getpayment" => $mobile, "id" => $id);
+            $encryptedResponse = encryption($returndata);
+            return array("return_response" => $encryptedResponse);
+
+        } else {
+//   return array("status"=>"failed");
+
+            $returndata = array("status" => "failed");
+            $encryptedResponse = encryption($returndata);
+            return array("return_response" => $encryptedResponse);
+
+
+        }
+
+    }
+
+    public function login(Request $req)
+    {
+
+        $decryptedResponse = decryption($req);
+//  return ($decryptedResponse);
+
+        // Check if decryption was successful
+        if (isset($decryptedResponse['error'])) {
+            // Handle the error appropriately
+            return response()->json(['error' => $decryptedResponse['error']]);
+        }
+
+        // Assuming decryptedResponse is an associative array, you can extract values like this:
+
+        $jsonString = $decryptedResponse ?? '';
+        $dataArray = json_decode($jsonString, true);
+        $mobile = $dataArray['mobile'];
 
 
 //   $bid = $req->bid;
 //   return $bid;
         // $mobile = (string) $req->Mob_no;
 
-        // $tbl=DB::table('Booking_Form')->where('Mob_no',$mobile)->where('level','1')->where('verification','verified')->get();
-        $tblmbl = DB::table('Booking_Form')->where('BF_id', $bid)->where('verification', 'verified_by_admin')->get();
-        // return $tblmbl;
+        $tbl = BookingForm::where('Mob_no', $mobile)->get();
 
-//   if($tblmbl){
-//       $mobile =$tblmbl[0]->Mob_no;
-//         $count=count($tblmbl);
-//   }
-// return $tblmbl;
-        $mobile = $tblmbl[0]->Mob_no;
         $otpdate = date('Y-m-d');
 
-        if (count($tblmbl) > 0) {
+        if (count($tbl) > 0) {
 
             $rand = rand(111111, 999999);
             // $rand = 1234;
@@ -132,7 +142,7 @@ class userlogin_Controller extends Controller
                 if ($valsts == "success" && $valvalue == "accepted") {
                     // return array("status" => "success","token"=>$key,"mobile"=>$mobile,"id"=>$bid);
 
-                    $returndata = array("status" => "success", "token" => $key, "mobile" => $mobile, "id" => $bid);
+                    $returndata = array("status" => "success", "token" => $key, "mobile" => $mobile);
 
                     $encryptedResponse = encryption($returndata);
                     return array("return_response" => $encryptedResponse);
@@ -166,12 +176,11 @@ class userlogin_Controller extends Controller
 
     }
 
-
     function verifyotp(Request $req)
     {
 
+
         $decryptedResponse = decryption($req);
-//  return ($decryptedResponse);
 
         // Check if decryption was successful
         if (isset($decryptedResponse['error'])) {
@@ -183,28 +192,30 @@ class userlogin_Controller extends Controller
 
         $jsonString = $decryptedResponse ?? '';
         $dataArray = json_decode($jsonString, true);
-        $mobile = $dataArray['Mob_no'];
-        $id = $dataArray['BF_id'];
+        $mobile = $dataArray['mobile'];
         $token = $dataArray['token'];
         $verigyOtp = $dataArray['verotp'];
 
 
-//  $mobile= (string) $req->Mob_no;
-//  $id=$req->BF_id;
+        $tbl = DB::Table('otp_table')->where('token', $token)->where('otp', $verigyOtp);
+
+        if ($tbl) {
 
 
-        $tbl = DB::Table('otp_table')->where('token', $token)->where('otp', $verigyOtp)->get();
+            $booking = BookingForm::where('Mob_no', $mobile)->first();
 
-        if (count($tbl) > 0) {
+            $token = $booking->createToken('API_Token')->accessToken;
 
-            //   $data =DB::table('Booking_Form')->where('Mob_no',$mobile)->get();
+            return response()->json([
+                "status" => "Success",
+                'token' => $token,
+                'booking' => $booking
+            ]);
 
-            //   return array("status"=>"verified","getpayment"=>$mobile,"id"=>$id);
 
-
-            $returndata = array("status" => "verified", "getpayment" => $mobile, "id" => $id);
-            $encryptedResponse = encryption($returndata);
-            return array("return_response" => $encryptedResponse);
+//            $returndata = array("status" => "Success", "mobile" => $mobile);
+//            $encryptedResponse = encryption($returndata);
+//            return array("return_response" => $encryptedResponse);
 
         } else {
 //   return array("status"=>"failed");
@@ -216,6 +227,9 @@ class userlogin_Controller extends Controller
 
         }
 
-
     }
+
+
+
+
 }

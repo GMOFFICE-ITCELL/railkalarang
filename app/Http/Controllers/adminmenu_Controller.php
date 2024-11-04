@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 
 class adminmenu_Controller extends Controller{
-    
-    
+
+
 //for encryption
 function encryption($data) {
     $key = '452c55d16a18f2ac049b2ec24637571a';
@@ -20,61 +20,61 @@ function encryption($data) {
     return $encoded;
 }
 
-//get data function    
+//get data function
 function verify_get(Request $req){
-    
-        
+
+
         $book_data = DB::table('Booking_Form')->where('verification','verified_by_cos')->where('level','1')->get();
-        
+
           if($book_data){
               $returndata= array("StatusResult"=>"success","book_table"=>$book_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
+
 function reject_get(Request $req){
-    
-        
+
+
         $book_data = DB::table('Booking_Form')->where('verification',['rejected_by_cos','admin_rejected'])->where('level','9')->get();
-        
+
           if($book_data){
               $returndata= array("StatusResult"=>"success","book_table"=>$book_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
+
 function withdraw_get(Request $req){
-    
-        
+
+
         $book_data = DB::table('Booking_Form')->where('verification','withdraw')->where('level','7')->get();
-        
+
           if($book_data){
               $returndata= array("StatusResult"=>"success","book_table"=>$book_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
 }

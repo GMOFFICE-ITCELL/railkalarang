@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class registration_Controller extends Controller
 {
-    
+
      function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
@@ -41,52 +41,52 @@ function encryption($data) {
 
     return $encoded;
 }
-    
+
 function decryptdataalongwithfile($req){
-       
+
             $req = (substr($req,20));
             $decoded_data = json_decode(base64_decode($req));
-            $req = $decoded_data; 
+            $req = $decoded_data;
             return $req;
         }
-    
-    
+
+
     function type_drp(Request $req){
-       
-        $decryptdt=$this->decryption($req);
-       
+
+        $decryptdt=decryption($req);
+
          if (isset($decryptdt['error'])) {
         // Handle the error appropriately
         return response()->json(['error' => $decryptdt['error']]);
          }
-         
+
     $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
     $token = $dataArray['token'];
     if($token=='rkj*2024#456'){
         $type_data = DB::table('dr__type_table')->select('type')->get();
-        
+
             if($type_data){
-            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","type_drp"=>$type_data));   
-          
+            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","type_drp"=>$type_data));
+
             return json_encode($returnsuccessdata);
             }
             else{
                 $returnfailure =$this->encryption(array("StatusResult"=>"failure"));
                 return json_encode($returnfailure);
             }
-        
+
     }
     else{
         $returntokenmismatch= $this->encryption(array("StatusResult"=>"TokenMismatch"));
         return json_encode($returntokenmismatch);
     }
-    
+
     }//end type_drp function
-   
-   
+
+
    //aadhar encryption and decryption
-   
+
      function encryptadh($str){
         $encrypt_method = "AES-256-CBC";
         $secret_key ='7aE3OKIZxusugQdpk3gwNi9x63MRAFLgkMJ4nyil88ZYMyjqTSE3FIo8L5KJghfi';
@@ -96,7 +96,7 @@ function decryptdataalongwithfile($req){
         $encryptToken = openssl_encrypt($str, $encrypt_method, $key, 0, $iv);
         return$encryptToken = base64_encode($encryptToken);
     }
-    
+
     function decryptadh($str){
          $encrypt_method = "AES-256-CBC";
         $secret_key ='7aE3OKIZxusugQdpk3gwNi9x63MRAFLgkMJ4nyil88ZYMyjqTSE3FIo8L5KJghfi';
@@ -105,32 +105,32 @@ function decryptdataalongwithfile($req){
         $iv = substr(hash('sha256', $secret_iv), 0, 16);
        return $decryptToken = openssl_decrypt(base64_decode($str), $encrypt_method, $key, 0, $iv);
     }
-   
-   
-    
+
+
+
     function reg_ins_dt(Request $req){
         // return $req;
-        
+
         $dataArray = $this->decryptdataalongwithfile($data);
-        
-         
-    //       $decryptdt=$this->decryption($req);
-       
+
+
+    //       $decryptdt=decryption($req);
+
     //      if (isset($decryptdt['error'])) {
     //     // Handle the error appropriately
     //     return response()->json(['error' => $decryptdt['error']]);
     //      }
-         
+
     // $jsonString = $decryptdt ?? '';
     // $dataArray = json_decode($jsonString, true);
-    
-    
+
+
     $token = $dataArray->token;
-    
-    
+
+
     if($token=='rkj*2024#456'){
-      
-        
+
+
         $typedrp = $dataArray->typedrp;
         $Name = $dataArray->Name;
         $Bank_name = $dataArray->Bank_name;
@@ -145,7 +145,7 @@ function decryptdataalongwithfile($req){
         $Purpose= $dataArray->Purpose;
         $relation = $dataArray->relation;
         $dependent= $dataArray->dependent;
-        
+
 
         $reg_data = [
             'type' => $typedrp,
@@ -158,17 +158,17 @@ function decryptdataalongwithfile($req){
             'alt_phone' => $Alternate_Contact_Number,
             'aadhar_no' => $Aadhaar_Number,
             'address' => $Address,
-          
+
         ];
 
         // return $reg_data;
-        
+
     $ins_data=DB::table('user_reg')->insert($reg_data);
     // return $ins_data;
     if($ins_data){
-        
- $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","ReturnData"=>$ins_data));   
-          
+
+ $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","ReturnData"=>$ins_data));
+
             return json_encode($returnsuccessdata);
     }
     else{
@@ -180,9 +180,9 @@ function decryptdataalongwithfile($req){
         $returntokenmismatch= $this->encryption(array("StatusResult"=>"TokenMismatch"));
         return json_encode($returntokenmismatch);
     }
-    
-        
-    
+
+
+
     }//end of reg_int_dt
 
 //     function reg_ins_dt(Request $req, $data) {
@@ -306,5 +306,5 @@ function decryptdataalongwithfile($req){
 //     }
 // }
 
-    
+
 }

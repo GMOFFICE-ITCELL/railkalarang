@@ -40,6 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
+        'bookings' => [
+            'driver' => 'passport',
+            'provider' => 'booking_form',
+        ],
     ],
 
     /*
@@ -63,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'booking_form' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\BookingForm::class,
         ],
 
         // 'users' => [

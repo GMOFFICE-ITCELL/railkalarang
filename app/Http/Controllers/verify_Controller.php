@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class verify_Controller extends Controller
 {
-    
+
 function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -40,10 +40,10 @@ function encryption($data) {
 
     return $encoded;
 }
-    
+
 // function verify(Request $req){
 //     // return $req;
-//  $decryptedResponse = $this->decryption($req);
+//  $decryptedResponse = decryption($req);
 // //  return ($decryptedResponse);
 
 //       // Check if decryption was successful
@@ -51,24 +51,24 @@ function encryption($data) {
 //         // Handle the error appropriately
 //         return response()->json(['error' => $decryptedResponse['error']]);
 //     }
-        
+
 //     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
 //     $jsonString = $decryptedResponse ?? '';
 //     $dataArray = json_decode($jsonString, true);
 //      $book_id = $dataArray['bid'];
-//      $book_mbno = $dataArray['mobile'];  
-          
+//      $book_mbno = $dataArray['mobile'];
+
 //     //   $book_id=$req->bid;
 //     //     $book_mbno=$req->mobile;
-        
+
 //     $verify_data=DB::TABLE('Booking_Form')->where('BF_id',$book_id)->where('Mob_no',$book_mbno)->update([
-            
+
 //             'level'=>'1',
 //              'verification'=>'verified_by_cos',
-//               'verified_date' => date('Y-m-d') 
+//               'verified_date' => date('Y-m-d')
 //             ]);
-//         //  return $verify_data;   
+//         //  return $verify_data;
 // //    // Fetch the current booking's date and slot
 //     $currentBooking = DB::table('Booking_Form')
 //         ->select('From_date', 'slot')
@@ -87,8 +87,8 @@ function encryption($data) {
 //             ->where('verification', '!=', 'verified_by_cos') // Exclude verified bookings
 //             ->get();
 //             return $sameSlotBookings;
-    
-    
+
+
 //         // Archive other bookings if they exist
 //         if ($sameSlotBookings->isNotEmpty()) {
 //             DB::table('Booking_Form')
@@ -100,12 +100,12 @@ function encryption($data) {
 //                     'level' => '5'
 //                 ]);
 //         }
-         
-        
+
+
 //             $get_level=DB::TABLE('Booking_Form')->where('BF_id',$book_id)->where('Mob_no',$book_mbno)->where('level', '1')->get();
-            
+
 //             if(count($get_level)>0){
-                
+
 //                 $smsData = [
 //                 "filetype" => 2,
 //                 "msisdn" => [$book_mbno],
@@ -140,7 +140,7 @@ function encryption($data) {
 //             $err = curl_error($curl);
 
 //             curl_close($curl);
-              
+
 // //dy.sec
 // $mobileno2='9177385289';
 //             $smsData = [
@@ -175,22 +175,22 @@ function encryption($data) {
 //             $valvalue = $dcode->value;
 //             $err = curl_error($curl);
 
-//             curl_close($curl);            
-                
+//             curl_close($curl);
+
 //             }
-            
+
 //              else{
 //               $valsts ='';
 //               $valvalue='';
 //           }
-    
+
 
 //         if($valsts == "success" && $valvalue == "accepted"){
 //         $returndata = array("Status" => "Success","BF_id"=>$book_id);
-        
-//          $encryptedResponse = $this->encryption($returndata);
+
+//          $encryptedResponse = encryption($returndata);
 //                 return  array("return_response"=>$encryptedResponse);
-    
+
 
 //         }
 //         else {
@@ -204,24 +204,24 @@ function encryption($data) {
 //  }
 
 function verify(Request $req){
-    $decryptedResponse = $this->decryption($req);
+    $decryptedResponse = decryption($req);
 
     // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
     $book_id = $dataArray['bid'];
-    $book_mbno = $dataArray['mobile'];  
-        
+    $book_mbno = $dataArray['mobile'];
+
     // Update booking form
     $verify_data = DB::table('Booking_Form')->where('BF_id', $book_id)->where('Mob_no', $book_mbno)->update([
         'level' => '1',
         'verification' => 'verified_by_cos',
-        'verified_date' => date('Y-m-d') 
+        'verified_date' => date('Y-m-d')
     ]);
 
     // Fetch the current booking's date and slot
@@ -331,11 +331,11 @@ if ($sameSlotBookings->isNotEmpty()) {
 
 
 
-    
-    
+
+
 function reject(Request $req){
            // return $req;
- $decryptedResponse = $this->decryption($req);
+ $decryptedResponse = decryption($req);
 //  return ($decryptedResponse);
 
        // Check if decryption was successful
@@ -343,28 +343,28 @@ function reject(Request $req){
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $book_id = $dataArray['bid'];
-     $book_mbno = $dataArray['mobile'];  
-      $remark_cos = $dataArray['remark_cos'];  
-        
+     $book_mbno = $dataArray['mobile'];
+      $remark_cos = $dataArray['remark_cos'];
+
         $verify_data=DB::TABLE('Booking_Form')->where('BF_id',$book_id)->where('Mob_no',$book_mbno)->update([
-            
+
             'level'=>'9',
             'remarks'=>$remark_cos,
             'verification'=>'rejected_by_cos',
              'verified_date' => date('Y-m-d')
-            
+
             ]);
-            
+
             $get_level=DB::TABLE('Booking_Form')->where('BF_id',$book_id)->where('Mob_no',$book_mbno)->where('level', '9')->get();
-            
+
             if(count($get_level)>0){
-                
+
                 $smsData = [
                 "filetype" => 2,
                 "msisdn" => [$book_mbno],
@@ -399,17 +399,17 @@ function reject(Request $req){
             $err = curl_error($curl);
 
             curl_close($curl);
-                
+
             }
-            
+
              else{
               $valsts ='';
               $valvalue='';
           }
-        
+
         if($valsts == "success" && $valvalue == "accepted"){
         $returndata = array("Status" => "Success","BF_id"=>$book_id);
-        
+
          $encryptedResponse = $this->encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
         }
@@ -418,8 +418,8 @@ function reject(Request $req){
              $encryptedResponse = $this->encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
         }
-                
+
 
     }
-    
+
 }

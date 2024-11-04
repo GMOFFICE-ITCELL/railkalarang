@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class booking_Controller extends Controller
 {
-    
+
      function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
@@ -41,61 +41,61 @@ function encryption($data) {
 
     return $encoded;
 }
-    
+
 function decryptdata($req){
-       
+
             $req = (substr($req,20));
             $decoded_data = json_decode(base64_decode($req));
-            $req = $decoded_data; 
+            $req = $decoded_data;
             return $req;
         }
-        
+
     //  function type_drp(Request $req){
 
-    //     $decryptdt=$this->decryption($req);
+    //     $decryptdt=decryption($req);
     //   //  return $decryptdt;
-         
+
     //   // return json_encode($decrypdt);
-       
+
     //      if (isset($decryptdt['error'])) {
     //     // Handle the error appropriately
     //     return response()->json(['error' => $decryptdt['error']]);
     //      }
-  
+
     // $jsonString = $decryptdt ?? '';
     // $dataArray = json_decode($jsonString, true);
     // $token = $dataArray['token'];
-    // $desig = $dataArray['desig'] ?? null; 
+    // $desig = $dataArray['desig'] ?? null;
     // $Place = $dataArray['place'] ?? null;
     // $Option = $dataArray['option'] ?? null;
     // // return $Place;
     // //  return response()->json(['Option' => $Option,'Place' =>$Place,'desig' =>$desig]);
     // if($token=='20244562429'){
-        
+
     //     $type_data = DB::table('dr__type_table')->select('type')->get();
-        
+
     //         if($type_data){
-                
-    //         $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","type_drp"=>$type_data));   
-          
+
+    //         $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","type_drp"=>$type_data));
+
     //         return json_encode($returnsuccessdata);
     //         }
     //         else{
     //             $returnfailure =$this->encryption(array("StatusResult"=>"failure"));
     //             return json_encode($returnfailure);
     //         }
-        
+
     // }
     // else{
     //     $returntokenmismatch= $this->encryption(array("StatusResult"=>"TokenMismatch"));
     //     return json_encode($returntokenmismatch);
     // }
-    
+
     // }//end type_drp function
-    
-    
+
+
   function type_drp(Request $req) {
-    // $decryptdt = $this->decryption($req);
+    // $decryptdt = decryption($req);
 
     // if (isset($decryptdt['error'])) {
     //     return response()->json(['error' => $decryptdt['error']]);
@@ -104,17 +104,17 @@ function decryptdata($req){
     // $jsonString = $decryptdt ?? '';
     // $dataArray = json_decode($jsonString, true);
     // return $dataArray;
-     $decryptedResponse = $this->decryption($req);
+     $decryptedResponse = decryption($req);
     if (isset($decryptedResponse['error'])) {
         return response()->json(['error' => $decryptedResponse['error']]);
     }
 
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
-    
+
     $token = $dataArray['token'];
     // $token = $dataArray['token'];
-    $desig = $dataArray['desig'] ?? null; 
+    $desig = $dataArray['desig'] ?? null;
     $Place = $dataArray['place'] ?? null;
     $Option = $dataArray['Option'] ?? null;
     //   return response()->json(['Option' => $Option,'Place' =>$Place,'desig' =>$desig]);
@@ -125,33 +125,33 @@ function decryptdata($req){
 
             $type_data = DB::table('dr__type_table')->where('category', 'Associations')->select('type')->get();
             // return $Option;
-            
+
         // return $type_data;
         } elseif ($Option === 'no' && $desig === 'General_public') {
             $type_data = DB::table('dr__type_table')->where('category', 'General_public')->select('type')->get();
             // return $Option;
            } elseif ($Option === 'no' && $desig === 'PSU_staff') {
             $type_data = DB::table('dr__type_table')->where('category', 'PSU for railway')->select('type')->get();
-        } elseif (($Option != 'no') && 
+        } elseif (($Option != 'no') &&
                   (($Place === 'secunderabad') || ($Place === 'hyderabad') || ($Place === 'other'))) {
             $type_data = DB::table('dr__type_table')->where('category', 'Railway_Employees')->select('type')->get();
-            
-        } 
-        
+
+        }
+
         else {
             $type_data = DB::table('dr__type_table')->select('type','category')->get();
         }
 // return $type_data;
         if ($type_data) {
     $type_data = $type_data->toArray(); // Convert Laravel collection to array
-    $returnsuccessdata = $this->encryption(array("StatusResult" => "success", "type_drp" => $type_data));   
+    $returnsuccessdata = $this->encryption(array("StatusResult" => "success", "type_drp" => $type_data));
       return json_encode($returnsuccessdata); // Use response()->json for proper encoding
 } else {
     $returnfailure = $this->encryption(array("StatusResult" => "failure"));
      return json_encode($returnfailure);
-    
-       
-               
+
+
+
 }
 
     } else {
@@ -164,88 +164,88 @@ function decryptdata($req){
 
      function dependent_drp(Request $req){
 
-        $decryptdt=$this->decryption($req);
+        $decryptdt=decryption($req);
        //  return $decryptdt;
-         
+
       // return json_encode($decrypdt);
-       
+
          if (isset($decryptdt['error'])) {
         // Handle the error appropriately
         return response()->json(['error' => $decryptdt['error']]);
          }
-         
-         
-         
+
+
+
     $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
     $token = $dataArray['token'];
-   
+
     if($token=='rkj*2024#456'){
-        
+
         $dep_data = DB::table('dependent_dropdown')->select('dependent_relation')->get();
-        
+
             if($dep_data){
-                
-            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","dependent_drp"=>$dep_data));   
-          
+
+            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","dependent_drp"=>$dep_data));
+
             return json_encode($returnsuccessdata);
             }
             else{
                 $returnfailure =$this->encryption(array("StatusResult"=>"failure"));
                 return json_encode($returnfailure);
             }
-        
+
     }
     else{
         $returntokenmismatch= $this->encryption(array("StatusResult"=>"TokenMismatch"));
         return json_encode($returntokenmismatch);
     }
-    
+
     }//end type_drp function
-    
+
 function payband_drp(Request $req){
 
-       $decryptdt=$this->decryption($req);
+       $decryptdt=decryption($req);
        //  return $decryptdt;
-         
+
       // return json_encode($decrypdt);
-       
+
          if (isset($decryptdt['error'])) {
         // Handle the error appropriately
         return response()->json(['error' => $decryptdt['error']]);
          }
-      
+
     $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
     $token = $dataArray['token'];
-   
+
     if($token=='rkj*2024#456'){
-        
+
         $pay_data = DB::table('payband_level_drp')->select('level')->get();
-        
+
             if($pay_data){
-                
-            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","payband_drp"=>$pay_data));   
-          
+
+            $returnsuccessdata =  $this->encryption(array("StatusResult"=>"success","payband_drp"=>$pay_data));
+
             return json_encode($returnsuccessdata);
             }
             else{
                 $returnfailure =$this->encryption(array("StatusResult"=>"failure"));
                 return json_encode($returnfailure);
             }
-        
+
     }
     else{
         $returntokenmismatch= $this->encryption(array("StatusResult"=>"TokenMismatch"));
         return json_encode($returntokenmismatch);
     }
-    
+
     }//end type_drp function
-    
- 
+
+
 // function reg_ins_dt(Request $req){
 //         // return $req;
-//     $decryptdt = $this->decryption($req);
+//     $decryptdt = decryption($req);
 //     if (isset($decryptdt['error'])) {
 //         return response()->json(['error' => $decryptdt['error']]);
 //     }
@@ -293,7 +293,7 @@ function payband_drp(Request $req){
 //         $insertedId = DB::table('Booking_Form')->insertGetId($reg_data);
 
 //         if ($ins_data) {
-//             $returnsuccessdata = $this->encryption(array("StatusResult" => "success", "ReturnData" => $ins_data, "inserted_id" => $insertedId));   
+//             $returnsuccessdata = $this->encryption(array("StatusResult" => "success", "ReturnData" => $ins_data, "inserted_id" => $insertedId));
 //             return json_encode($returnsuccessdata);
 //         } else {
 //             $returnfailuredata = $this->encryption(array("StatusResult" => "failure"));
@@ -307,14 +307,14 @@ function payband_drp(Request $req){
 
 public function reg_ins_dt(Request $req)
 {
-    $decryptdt = $this->decryption($req);
+    $decryptdt = decryption($req);
     if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
 
     $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
-   
+
     $token = $dataArray['token'];
 
     if ($token == 'rkj*2024#456') {
@@ -329,7 +329,7 @@ public function reg_ins_dt(Request $req)
         $Bank_name = $dataArray['Bank_name'];
         $Desig_ofice = $dataArray['Desig_ofice'];
         $PF_Ticket = $dataArray['PF_Ticket'];
-        
+
          $place_work = $dataArray['place_work'];
         $Grade_pay = $dataArray['Grade_pay'];
         $hrmsid = $dataArray['hrmsid'];
@@ -376,7 +376,7 @@ public function reg_ins_dt(Request $req)
         $ins_data = DB::table('Booking_Form')->where('BF_id', $insertedId)->get();
         $mobileno = $ins_data[0]->Mob_no;
         if(count($ins_data) > 0){
-                
+
             $smsData = [
                 "filetype" => 2,
                 "msisdn" => [$mobileno],
@@ -410,11 +410,11 @@ public function reg_ins_dt(Request $req)
             $err = curl_error($curl);
 
             curl_close($curl);
-            
-            
 
-            
-            
+
+
+
+
         } else {
             $valsts = '';
             $valvalue = '';
@@ -431,24 +431,24 @@ public function reg_ins_dt(Request $req)
 
 
 function get_slotdata(Request $req) {
-    $decryptdt = $this->decryption($req);
+    $decryptdt = decryption($req);
       if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
-    
+
     $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
     $date_selected = $dataArray['Fromdate'];
-    
+
     // Calculate the next date
     $next_date = date('Y-m-d', strtotime($date_selected . ' +1 day'));
     $previous_date = date('Y-m-d', strtotime($date_selected . ' -1 day'));
     // Query for slots on the selected date
     $get_slot_current = DB::table('Booking_Form')->where('From_date', $date_selected)->where('verification',"allotted")->pluck('slot');
-    
+
     // Query for slots on the next date
     $get_slot_next = DB::table('Booking_Form')->where('From_date', $next_date)->where('verification',"allotted")->pluck('slot');
-    
+
     $get_slot_previous = DB::table('Booking_Form')->where('From_date', $previous_date)->where('verification',"allotted")->pluck('slot');
     // Prepare return data based on the availability of slots
     if (!empty($get_slot_current) || !empty($get_slot_next) || !empty($get_slot_previous)) {
@@ -474,44 +474,44 @@ function get_slotdata(Request $req) {
             "Returnfailpreviousdata" => "previousempty"
         ];
     }
-    
+
     $encryptedResponse = $this->encryption($returndata);
     return ["return_response" => $encryptedResponse];
 }
 
 ///alloted code
 // function get_slotdata(Request $req) {
-//     $decryptdt = $this->decryption($req);
+//     $decryptdt = decryption($req);
 //     if (isset($decryptdt['error'])) {
 //         return response()->json(['error' => $decryptdt['error']]);
 //     }
-    
+
 //     $jsonString = $decryptdt ?? '';
 //     $dataArray = json_decode($jsonString, true);
 //     $date_selected = $dataArray['Fromdate'];
-    
+
 //     // Calculate the next and previous dates
 //     $next_date = date('Y-m-d', strtotime($date_selected . ' +1 day'));
 //     $previous_date = date('Y-m-d', strtotime($date_selected . ' -1 day'));
-    
+
 //     // Query for available slots on the selected date, excluding those with 'alloted' status
 //     $get_slot_current = DB::table('Booking_Form')
 //         ->where('From_date', $date_selected)
 //         ->where('verification', '!=', 'alloted') // Exclude 'alloted' slots
 //         ->pluck('slot');
-    
+
 //     // Query for available slots on the next date, excluding 'alloted' slots
 //     $get_slot_next = DB::table('Booking_Form')
 //         ->where('From_date', $next_date)
 //         ->where('verification', '!=', 'alloted') // Exclude 'alloted' slots
 //         ->pluck('slot');
-    
+
 //     // Query for available slots on the previous date, excluding 'alloted' slots
 //     $get_slot_previous = DB::table('Booking_Form')
 //         ->where('From_date', $previous_date)
 //         ->where('verification', '!=', 'alloted') // Exclude 'alloted' slots
 //         ->pluck('slot');
-    
+
 //     // Prepare return data based on the availability of slots
 //     if (!empty($get_slot_current) || !empty($get_slot_next) || !empty($get_slot_previous)) {
 //         $returndata = [
@@ -532,7 +532,7 @@ function get_slotdata(Request $req) {
 //             "Returnfailpreviousdata" => "previousempty"
 //         ];
 //     }
-    
+
 //     // Encrypt the response before returning
 //     $encryptedResponse = $this->encryption($returndata);
 //     return ["return_response" => $encryptedResponse];

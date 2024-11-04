@@ -8,13 +8,13 @@ use Carbon\Carbon;
 
 class amenity_update_Controller extends Controller
 {
-    
-    
+
+
     function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -47,7 +47,7 @@ public function updateFinalStatus(Request $req)
 {
     // return $req;
     // Decrypt the incoming request
-    $decryptedResponse = $this->decryption($req);
+    $decryptedResponse = decryption($req);
 
     // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -64,37 +64,37 @@ public function updateFinalStatus(Request $req)
 $result = DB::update("
     UPDATE `amenity_charges`
     SET `final_status` = 'completed'
-    WHERE `electrical_reading_from1` IS NOT NULL 
-      AND `electrical_reading_to1` IS NOT NULL 
-       AND `electrical_reading_from2` IS NOT NULL 
-      AND `electrical_reading_to2` IS NOT NULL 
-      AND `electrical_reading_from3` IS NOT NULL 
-      AND `electrical_reading_to3` IS NOT NULL 
-      AND `electrical_reading_from4` IS NOT NULL 
-      AND `electrical_reading_to4` IS NOT NULL 
-      AND `electrical_reading_from5` IS NOT NULL 
-      AND `electrical_reading_to5` IS NOT NULL 
-      AND`electrical_reading_from6` IS NOT NULL 
-      AND `electrical_reading_to6` IS NOT NULL 
+    WHERE `electrical_reading_from1` IS NOT NULL
+      AND `electrical_reading_to1` IS NOT NULL
+       AND `electrical_reading_from2` IS NOT NULL
+      AND `electrical_reading_to2` IS NOT NULL
+      AND `electrical_reading_from3` IS NOT NULL
+      AND `electrical_reading_to3` IS NOT NULL
+      AND `electrical_reading_from4` IS NOT NULL
+      AND `electrical_reading_to4` IS NOT NULL
+      AND `electrical_reading_from5` IS NOT NULL
+      AND `electrical_reading_to5` IS NOT NULL
+      AND`electrical_reading_from6` IS NOT NULL
+      AND `electrical_reading_to6` IS NOT NULL
       AND `numberOfUnits1` IS NOT NULL
       AND `numberOfUnits2` IS NOT NULL
       AND `numberOfUnits3` IS NOT NULL
       AND `numberOfUnits4` IS NOT NULL
       AND `numberOfUnits5` IS NOT NULL
       AND `numberOfUnits6` IS NOT NULL
-      AND `ratePerUnit` IS NOT NULL 
-      AND `electrical_charging_amount` IS NOT NULL 
-      AND `electrical_remarks` IS NOT NULL 
-      AND `electrical_date` IS NOT NULL 
-      AND `no_of_litres_water` IS NOT NULL 
-      AND `water_Amount` IS NOT NULL 
-      AND `water_remarks` IS NOT NULL 
-      AND `water_date` IS NOT NULL 
-      AND `eng_remarks` IS NOT NULL 
-      AND `eng_Amount` IS NOT NULL 
-      AND `eng_date` IS NOT NULL 
-      AND `s_t_remarks` IS NOT NULL 
-      AND `s_t_Amount` IS NOT NULL 
+      AND `ratePerUnit` IS NOT NULL
+      AND `electrical_charging_amount` IS NOT NULL
+      AND `electrical_remarks` IS NOT NULL
+      AND `electrical_date` IS NOT NULL
+      AND `no_of_litres_water` IS NOT NULL
+      AND `water_Amount` IS NOT NULL
+      AND `water_remarks` IS NOT NULL
+      AND `water_date` IS NOT NULL
+      AND `eng_remarks` IS NOT NULL
+      AND `eng_Amount` IS NOT NULL
+      AND `eng_date` IS NOT NULL
+      AND `s_t_remarks` IS NOT NULL
+      AND `s_t_Amount` IS NOT NULL
       AND `s_t_date` IS NOT NULL
 ");
 
@@ -102,8 +102,8 @@ $result = DB::update("
 //     $status = DB::table('amenity_charges')
 //                 ->update(['final_status' => 'completed']);
 
-    
-        
+
+
         if ($result) {
             $returndata = [
                 "status_result" => "success",
@@ -113,10 +113,10 @@ $result = DB::update("
                 "status_result" => "failure",
             ];
         }
-    
+
 
     // Encrypt the response before returning
-    $encryptedResponse = $this->encryption($returndata);
+    $encryptedResponse = encryption($returndata);
     return ["return_response" => $encryptedResponse];
 
 }
@@ -124,8 +124,8 @@ $result = DB::update("
 //electrical update data
 public function update_Electrical_Data(Request $req)
 {
-    
-       $decryptedResponse = $this->decryption($req);
+
+       $decryptedResponse = decryption($req);
 //  return ($decryptedResponse);
 
        // Check if decryption was successful
@@ -133,7 +133,7 @@ public function update_Electrical_Data(Request $req)
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
     $jsonString = $decryptedResponse ?? '';
@@ -162,7 +162,7 @@ public function update_Electrical_Data(Request $req)
     $remarks = $dataArray['ele_remarks'];
     $date=date('Y-m-d');
 
-    
+
     $electricalUpdate = DB::table('amenity_charges')->where('ref_id',$id)->update([
         'electrical_reading_from1'=>$reading_from1,
         'electrical_reading_to1'=>$reading_to1,
@@ -197,21 +197,21 @@ public function update_Electrical_Data(Request $req)
         ];
     }
 
-    $encryptedResponse = $this->encryption($returndata);
+    $encryptedResponse = encryption($returndata);
     $response = ["return_response" => $encryptedResponse];
 
     // Call the updateFinalStatus function after the main update
     $this->updateFinalStatus($req);
 
     return $response;
-     
+
 }
 
 //water update data
 public function update_Water_Data(Request $req)
 {
-    
-       $decryptedResponse = $this->decryption($req);
+
+       $decryptedResponse = decryption($req);
 //  return ($decryptedResponse);
 
        // Check if decryption was successful
@@ -219,7 +219,7 @@ public function update_Water_Data(Request $req)
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
     $jsonString = $decryptedResponse ?? '';
@@ -231,7 +231,7 @@ public function update_Water_Data(Request $req)
     $remarks = $dataArray['water_remarks'];
     $date=date('Y-m-d');
 
-    
+
     $waterUpdate =  DB::table('amenity_charges')->where('ref_id',$id)->update([
         'no_of_litres_water'=>$litres,
         'cost_perlitre'=>$perlitre,
@@ -239,7 +239,7 @@ public function update_Water_Data(Request $req)
         'water_remarks'=>$remarks,
         'water_date'=>$date,
         ]);
-        
+
          if ($waterUpdate) {
         $returndata = [
             "status_result" => "success",
@@ -250,7 +250,7 @@ public function update_Water_Data(Request $req)
         ];
     }
 
-    $encryptedResponse = $this->encryption($returndata);
+    $encryptedResponse = encryption($returndata);
     $response = ["return_response" => $encryptedResponse];
 
     // Call the updateFinalStatus function after the main update
@@ -263,8 +263,8 @@ public function update_Water_Data(Request $req)
 //engg update data
 public function update_engineering_Data(Request $req)
 {
-    
-       $decryptedResponse = $this->decryption($req);
+
+       $decryptedResponse = decryption($req);
 //  return ($decryptedResponse);
 
        // Check if decryption was successful
@@ -272,7 +272,7 @@ public function update_engineering_Data(Request $req)
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
     $jsonString = $decryptedResponse ?? '';
@@ -282,13 +282,13 @@ public function update_engineering_Data(Request $req)
     $remarks = $dataArray['engg_remarks'];
     $date=date('Y-m-d');
 
-    
+
     $enggUpdate =  DB::table('amenity_charges')->where('ref_id',$id)->update([
         'eng_Amount'=>$amount,
         'eng_remarks'=>$remarks,
         'eng_date'=>$date,
         ]);
-        
+
                if ($enggUpdate) {
         $returndata = [
             "status_result" => "success",
@@ -299,7 +299,7 @@ public function update_engineering_Data(Request $req)
         ];
     }
 
-    $encryptedResponse = $this->encryption($returndata);
+    $encryptedResponse = encryption($returndata);
     $response = ["return_response" => $encryptedResponse];
 
     // Call the updateFinalStatus function after the main update
@@ -312,8 +312,8 @@ public function update_engineering_Data(Request $req)
 
 public function update_ST_Data(Request $req)
 {
-    
-       $decryptedResponse = $this->decryption($req);
+
+       $decryptedResponse = decryption($req);
 //  return ($decryptedResponse);
 
        // Check if decryption was successful
@@ -321,7 +321,7 @@ public function update_ST_Data(Request $req)
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-        
+
     // Assuming decryptedResponse is an associative array, you can extract values like this:
 
     $jsonString = $decryptedResponse ?? '';
@@ -331,13 +331,13 @@ public function update_ST_Data(Request $req)
     $remarks = $dataArray['st_remarks'];
     $date=date('Y-m-d');
 
-    
+
     $stUpdate =  DB::table('amenity_charges')->where('ref_id',$id)->update([
         's_t_Amount'=>$amount,
         's_t_remarks'=>$remarks,
         's_t_date'=>$date,
         ]);
-        
+
        if ($stUpdate) {
         $returndata = [
             "status_result" => "success",
@@ -348,17 +348,17 @@ public function update_ST_Data(Request $req)
         ];
     }
 
-    $encryptedResponse = $this->encryption($returndata);
+    $encryptedResponse = encryption($returndata);
     $response = ["return_response" => $encryptedResponse];
 
     // Call the updateFinalStatus function after the main update
     $this->updateFinalStatus($req);
 
     return $response;
-    
+
 }
 
 
-    
-    
+
+
 }

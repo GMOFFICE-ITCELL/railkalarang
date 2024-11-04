@@ -8,12 +8,12 @@ use Carbon\Carbon;
 
 class amenities_Controller extends Controller
 {
-    
+
     function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -41,7 +41,7 @@ function encryption($data) {
 
     return $encoded;
 }
-   
+
 public function checkAndInsert(Request $req)
 {
     $records = DB::table('Booking_Form')->where('verification','allotted')->get();
@@ -76,33 +76,33 @@ public function checkAndInsert(Request $req)
     }
     // Determine the response based on the number of records processed
     if ($insertedRecords > 0) {
-        
+
         $returndata = [
             "status_result" => "success",
-           
+
         ];
     } else {
         $returndata = [
             "status_result" => "failure",
-           
+
         ];
-       
-        
+
+
     }
 
-    
+
 }
 
 //Electrical data
 
 
 public function Getelectrical_master(Request $req) {
-    
+
     // Fetch the latest entry from the Waterworks_masterdata table based on the ID
     $getelec_data = DB::table('electrical_masterdata')
                         ->orderBy('ele_mas_id', 'desc')  // Sort by 'id' in descending order to get the latest
                         ->first();  // Retrieve only the latest entry
-    
+
     // Check if data is found
     if ($getelec_data) {
         $returndata = array("StatusResult" => "success", "electrical_master_data" => $getelec_data);
@@ -111,8 +111,8 @@ public function Getelectrical_master(Request $req) {
     }
 
     // Encrypt the response
-    $encryptedResponse = $this->encryption($returndata);
-    
+    $encryptedResponse = encryption($returndata);
+
     // Return the encrypted response
     return array("return_response" => $encryptedResponse);
 }
@@ -130,25 +130,25 @@ public function get_Electrical_Data(Request $req)
     // Iterate through each record in amenity_charges
     foreach ($amenityRecords as $amenity) {
         // Check if any of the specified fields are null
-        if (is_null($amenity->electrical_reading_from1) || 
-            is_null($amenity->electrical_reading_to1) || 
-            is_null($amenity->electrical_reading_from2) || 
-            is_null($amenity->electrical_reading_to2) || 
-            is_null($amenity->electrical_reading_from3) || 
-            is_null($amenity->electrical_reading_to3) || 
-            is_null($amenity->electrical_reading_from4) || 
-            is_null($amenity->electrical_reading_to4) || 
-            is_null($amenity->electrical_reading_from5) || 
-            is_null($amenity->electrical_reading_to5) || 
-            is_null($amenity->electrical_reading_from6) || 
-            is_null($amenity->electrical_reading_to6) || 
-            is_null($amenity->numberOfUnits1) || 
-            is_null($amenity->numberOfUnits2) || 
-            is_null($amenity->numberOfUnits3) || 
-            is_null($amenity->numberOfUnits4) || 
-            is_null($amenity->numberOfUnits5) || 
-            is_null($amenity->numberOfUnits6) || 
-            is_null($amenity->ratePerUnit) || 
+        if (is_null($amenity->electrical_reading_from1) ||
+            is_null($amenity->electrical_reading_to1) ||
+            is_null($amenity->electrical_reading_from2) ||
+            is_null($amenity->electrical_reading_to2) ||
+            is_null($amenity->electrical_reading_from3) ||
+            is_null($amenity->electrical_reading_to3) ||
+            is_null($amenity->electrical_reading_from4) ||
+            is_null($amenity->electrical_reading_to4) ||
+            is_null($amenity->electrical_reading_from5) ||
+            is_null($amenity->electrical_reading_to5) ||
+            is_null($amenity->electrical_reading_from6) ||
+            is_null($amenity->electrical_reading_to6) ||
+            is_null($amenity->numberOfUnits1) ||
+            is_null($amenity->numberOfUnits2) ||
+            is_null($amenity->numberOfUnits3) ||
+            is_null($amenity->numberOfUnits4) ||
+            is_null($amenity->numberOfUnits5) ||
+            is_null($amenity->numberOfUnits6) ||
+            is_null($amenity->ratePerUnit) ||
             is_null($amenity->electrical_charging_amount)) {
 
             // Fetch the related Booking_Form data based on ref_id
@@ -181,8 +181,8 @@ public function get_Electrical_Data(Request $req)
     return ["return_response" => $encryptedResponse];
     }
 
-  
-    
+
+
 }
 
 //water data
@@ -190,12 +190,12 @@ public function get_Electrical_Data(Request $req)
 //waterworks masterdata
 
 public function GetWater_master(Request $req) {
-    
+
     // Fetch the latest entry from the Waterworks_masterdata table based on the ID
     $getwater_data = DB::table('Waterworks_masterdata')
                         ->orderBy('water_mas_id', 'desc')  // Sort by 'id' in descending order to get the latest
                         ->first();  // Retrieve only the latest entry
-    
+
     // Check if data is found
     if ($getwater_data) {
         $returndata = array("StatusResult" => "success", "water_master_data" => $getwater_data);
@@ -205,7 +205,7 @@ public function GetWater_master(Request $req) {
 
     // Encrypt the response
     $encryptedResponse = $this->encryption($returndata);
-    
+
     // Return the encrypted response
     return array("return_response" => $encryptedResponse);
 }
@@ -223,7 +223,7 @@ public function get_Water_Data(Request $req)
     // Iterate through each record in amenity_charges
     foreach ($amenityRecords as $amenity) {
         // Check if any of the specified fields are null
-        if (is_null($amenity->no_of_litres_water) || 
+        if (is_null($amenity->no_of_litres_water) ||
             is_null($amenity->water_Amount) ) {
 
             // Fetch the related Booking_Form data based on ref_id
@@ -271,7 +271,7 @@ public function get_engineering_Data(Request $req)
     // Iterate through each record in amenity_charges
     foreach ($amenityRecords as $amenity) {
         // Check if any of the specified fields are null
-        if (is_null($amenity->eng_remarks) || 
+        if (is_null($amenity->eng_remarks) ||
             is_null($amenity->eng_Amount) ) {
 
             // Fetch the related Booking_Form data based on ref_id
@@ -310,7 +310,7 @@ public function get_engineering_Data(Request $req)
 
 public function get_ST_Data(Request $req)
 {
-    
+
     // Fetch all records from amenity_charges
     $amenityRecords = DB::table('amenity_charges')->get();
 
@@ -320,7 +320,7 @@ public function get_ST_Data(Request $req)
     // Iterate through each record in amenity_charges
     foreach ($amenityRecords as $amenity) {
         // Check if any of the specified fields are null
-        if (is_null($amenity->s_t_remarks) || 
+        if (is_null($amenity->s_t_remarks) ||
             is_null($amenity->s_t_Amount) ) {
 
             // Fetch the related Booking_Form data based on ref_id

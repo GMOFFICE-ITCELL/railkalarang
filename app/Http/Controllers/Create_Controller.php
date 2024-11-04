@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Create_Controller extends Controller
 {
-    
+
 function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571e';
@@ -47,7 +47,7 @@ function encryption($data) {
 
 function insertdata(Request $req) {
     // Decrypt the response
-    $decryptedResponse = $this->decryption($req);
+    $decryptedResponse = decryption($req);
 
     // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -57,19 +57,19 @@ function insertdata(Request $req) {
 
     // Assuming decryptedResponse is an associative array, you can extract values like this:
      $stock_name = $decryptedResponse['stock_name'] ?? null;
-     $buying_price = $decryptedResponse['buying_price'] ?? null; 
- 
-     
+     $buying_price = $decryptedResponse['buying_price'] ?? null;
+
+
             // Data to insert
             $data = [
                 'stock_name' => $stock_name,
                 'buying_price'=> $buying_price
                 // ... more columns
             ];
-            
+
             // Insert data into the table
             $insertResult=DB::table('stocks_data_table')->insert($data);
-            
+
             if($insertResult){
                 $returndata = array("status"=>"success");
                  $encryptedResponse = $this->encryption($returndata);
@@ -79,9 +79,9 @@ function insertdata(Request $req) {
                 $returndata = array("status"=>"failed");
                  $encryptedResponse = $this->encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
+
             }
-            
+
     // Finally, return a response or the processed data
     //  return array(['stock_name' => $stock_name, 'buying_price' => $buying_price]); // Or return processed data
 }

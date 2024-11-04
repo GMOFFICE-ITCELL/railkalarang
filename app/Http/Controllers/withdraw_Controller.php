@@ -12,7 +12,7 @@ class withdraw_Controller extends Controller
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -43,7 +43,7 @@ function encryption($data) {
 
 function withdrawfun(Request $req){
     // return $req;
- $decryptedResponse = $this->decryption($req);
+ $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -55,22 +55,22 @@ function withdrawfun(Request $req){
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id =$dataArray['uid'];
-     
+
      $data=DB::table('Booking_Form')->where('BF_id',$id)->update([
          'verification'=>"withdraw",
          'level'=>"7",
          'verified_date' => date('Y-m-d')
          ]);
           $returndata = array("Status" => "Success");
-        
-         $encryptedResponse = $this->encryption($returndata);
+
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-     
+
 }
 
 function revert_fun(Request $req){
     // return $req;
- $decryptedResponse = $this->decryption($req);
+ $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -82,15 +82,15 @@ function revert_fun(Request $req){
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id =$dataArray['id'];
-     
+
      $data=DB::table('Booking_Form')->where('BF_id',$id)->update([
          'verification'=>"verified",
          'reverted_date' => date('Y-m-d')
          ]);
           $returndata = array("Status" => "Success");
-        
-         $encryptedResponse = $this->encryption($returndata);
+
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-     
+
 }
 }

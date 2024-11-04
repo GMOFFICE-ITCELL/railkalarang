@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class receipt_Controller extends Controller
 {
-    
+
  function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -43,8 +43,8 @@ function encryption($data) {
 
 
 function getreceipt (Request $req){
-    
-     $decryptedResponse = $this->decryption($req);
+
+     $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -56,23 +56,23 @@ function getreceipt (Request $req){
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $order_no = $dataArray['orderno'];
-     
+
      $rdata =DB::table('Transaction_table')->where('Order_number',$order_no)->get();
      if($rdata){
          $returndata=array("status"=>"Success","recieptdata"=>$rdata);
-         $encryptedResponse = $this->encryption($returndata);
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
+
         }else{
             $returndata=array("status"=>"failure");
-          $encryptedResponse = $this->encryption($returndata);
+          $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
-        }   
+
+        }
 }
 function getstatusreceipt(Request $req){
-    
-     $decryptedResponse = $this->decryption($req);
+
+     $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -84,24 +84,24 @@ function getstatusreceipt(Request $req){
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-     
+
      $rdata =DB::table('Transaction_table')->where('Ref_id',$id)->get();
      if($rdata){
          $returndata=array("status"=>"Success","recieptdata"=>$rdata);
-         $encryptedResponse = $this->encryption($returndata);
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
+
         }else{
             $returndata=array("status"=>"failure");
-          $encryptedResponse = $this->encryption($returndata);
+          $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
-        }   
+
+        }
 }
 
 function getexcessreceipt (Request $req){
-    
-     $decryptedResponse = $this->decryption($req);
+
+     $decryptedResponse = decryption($req);
        //  return ($decryptedResponse);
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
@@ -113,55 +113,55 @@ function getexcessreceipt (Request $req){
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $order_no = $dataArray['orderno'];
-     
+
      $rdata =DB::table('excess_Transaction_table')->where('Order_number',$order_no)->get();
      if($rdata){
          $returndata=array("status"=>"Success","recieptdata"=>$rdata);
-         $encryptedResponse = $this->encryption($returndata);
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
+
         }else{
             $returndata=array("status"=>"failure");
-          $encryptedResponse = $this->encryption($returndata);
+          $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
-        }   
+
+        }
 }
 
 
 
 function setallot(Request $req){
-    
-     $decryptedResponse = $this->decryption($req);
-        
+
+     $decryptedResponse = decryption($req);
+
        // Check if decryption was successful
     if (isset($decryptedResponse['error'])) {
         // Handle the error appropriately
         return response()->json(['error' => $decryptedResponse['error']]);
     }
-    
+
     $jsonString = $decryptedResponse ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['id'];
-   
+
      $allotlevel = DB::table('Transaction_table')->where('Ref_id',$id)->update([
          'level'=>"4"]);
          $allotlevel = DB::table('Booking_Form')->where('BF_id',$id)->update([
          'level'=>"4",
          'verification'=>"allotted"]);
-         
+
          if($allotlevel){
          $returndata=array("status"=>"Success");
-         $encryptedResponse = $this->encryption($returndata);
+         $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
+
         }else{
             $returndata=array("status"=>"failure");
-          $encryptedResponse = $this->encryption($returndata);
+          $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
-            
-        }   
-       
+
+        }
+
 }
 
 }

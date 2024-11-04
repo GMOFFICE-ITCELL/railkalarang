@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class final_Controller extends Controller
 {
-    
+
      function decryption($req) {
     $encryptedData = $req->input('encryptedData');
     $key = '452c55d16a18f2ac049b2ec24637571a';
     $iv = 'cetksum*rkj#4202';
- 
+
  if ($decodedData = base64_decode($encryptedData, true)) {
         $decryptedJson = openssl_decrypt($decodedData, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($decryptedJson === false) {
@@ -42,10 +42,10 @@ function encryption($data) {
 }
 
 
-//get data function    
+//get data function
 function final_get(Request $req){
     // return $req;
-        $final_data = DB::table('Booking_Form')	
+        $final_data = DB::table('Booking_Form')
 ->where('doc_status',"success")->where("verification","allotted")->get();
 
 $filtered_data = [];
@@ -54,8 +54,8 @@ foreach ($final_data as $booking) {
     $amenity_data = DB::table('amenity_charges')
         ->where('ref_id', $booking->BF_id)  // Assuming 'ref_id' in amenity_charges refers to the 'BF_id' in Booking_Form
         ->whereNotNull([
-            'electrical_reading_from1', 
-            'electrical_reading_to1', 
+            'electrical_reading_from1',
+            'electrical_reading_to1',
             'electrical_reading_from2',
             'electrical_reading_to2',
             'electrical_reading_from3',
@@ -66,15 +66,15 @@ foreach ($final_data as $booking) {
             'electrical_reading_to5',
             'electrical_reading_from6',
             'electrical_reading_to6',
-            'numberOfUnits1', 
+            'numberOfUnits1',
             'numberOfUnits2',
             'numberOfUnits3',
             'numberOfUnits4',
             'numberOfUnits5',
             'numberOfUnits6',
-            'ratePerUnit', 
-            'electrical_charging_amount', 
-            'no_of_litres_water', 
+            'ratePerUnit',
+            'electrical_charging_amount',
+            'no_of_litres_water',
             'cost_perlitre',
             'water_Amount'
         ])
@@ -86,22 +86,22 @@ foreach ($final_data as $booking) {
         // return $allotment_data;
           if(!empty($filtered_data)){
               $returndata= array("StatusResult"=>"success","final_table"=>$filtered_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
-    
+
 }
-    
+
     function get_final_electrical(Request $req){
-        
-         $decryptdt=$this->decryption($req);
+
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
@@ -109,133 +109,133 @@ foreach ($final_data as $booking) {
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['ref_id'];
     //  return $id;
-    
+
         // $id=$req->id;
         $final_ele_data=DB::table('amenity_charges')->where('ref_id', $id)->get();
-        
-        
-      
-        
-        
-        
+
+
+
+
+
+
         if($final_ele_data){
               $returndata= array("StatusResult"=>"success","final_elec_table"=>$final_ele_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
+
     function get_final_engineering(Request $req){
-         $decryptdt=$this->decryption($req);
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['ref_id'];
-    
+
         // $id=$req->id;
         $final_engg_data=DB::table('amenity_charges')->where('ref_id', $id)->get();
         if($final_engg_data){
               $returndata= array("StatusResult"=>"success","final_engg_table"=>$final_engg_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
+
     function get_final_water(Request $req){
-         $decryptdt=$this->decryption($req);
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['ref_id'];
-    
+
         // $id=$req->id;
         $final_water_data=DB::table('amenity_charges')->where('ref_id', $id)->get();
         if($final_water_data){
               $returndata= array("StatusResult"=>"success","final_water_table"=>$final_water_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
+
     function get_final_ST(Request $req){
-         $decryptdt=$this->decryption($req);
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['ref_id'];
-    
+
         // $id=$req->id;
         $final_ST_data=DB::table('amenity_charges')->where('ref_id', $id)->get();
         if($final_ST_data){
               $returndata= array("StatusResult"=>"success","final_ST_table"=>$final_ST_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
-    
+
+
        function get_final_transaction(Request $req){
-         $decryptdt=$this->decryption($req);
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
       $jsonString = $decryptdt ?? '';
     $dataArray = json_decode($jsonString, true);
      $id = $dataArray['ref_id'];
-    
+
         // $id=$req->id;
         $final_trans_data=DB::table('Transaction_table')->where('Ref_id', $id)->get();
         if($final_trans_data){
               $returndata= array("StatusResult"=>"success","final_trans_table"=>$final_trans_data);
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
     }
-    
-    
+
+
     function insertExcessData(Request $req){
-         $decryptdt=$this->decryption($req);
+         $decryptdt=decryption($req);
        if (isset($decryptdt['error'])) {
         return response()->json(['error' => $decryptdt['error']]);
     }
@@ -244,19 +244,19 @@ foreach ($final_data as $booking) {
     $id = $dataArray['ref_id'];
     $link = $dataArray['link'];
     $Eamount = $dataArray['Eamount'];
-    
+
     $insertdata = DB::table('excess_table')->insert([
         'Ref_id' => $id,
         'ex_link'=>$link,
         'Ex_amount'=>$Eamount,
         'ex_status'=>"unpaid",
         ]);
-        
-        
+
+
         $sendmessage = DB::table('Booking_Form')->where('BF_id',$id)->get();
-        
+
         $mobile = $sendmessage[0]->Mob_no;
-        
+
         if($sendmessage){
        $smsData = [
                 "filetype" => 2,
@@ -293,33 +293,33 @@ foreach ($final_data as $booking) {
 
             curl_close($curl);
         }
-            
+
              else{
               $valsts ='';
               $valvalue='';
           }
-        
+
         if($insertdata){
               $returndata= array("StatusResult"=>"success");
-              $encryptedResponse = $this->encryption($returndata);
+              $encryptedResponse = encryption($returndata);
                 return  array("return_response"=>$encryptedResponse);
           }
            else{
                $returndata= array("StatusResult"=>"failure");
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return array("return_response"=>$encryptedResponse);
-               
-                
+
+
            }
-           
-           
-           
-    
+
+
+
+
     }
-        
-    
-    
-    
-    
-    
+
+
+
+
+
+
 }
