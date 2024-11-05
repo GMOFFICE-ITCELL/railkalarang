@@ -69,11 +69,32 @@ class AuthController extends Controller
 
 
 
-    public function login(Request $request)
+    public function login(Request $req)
     {
+        $decryptedResponse = decryption($req);
 
+        // Check if decryption was successful
+        if (isset($decryptedResponse['error'])) {
+            return response()->json(['error' => $decryptedResponse['error']]);
+        }
 
-        $validator = Validator::make($request->all(), [
+        // Decode the decrypted JSON string into an associative array
+        $dataArray = json_decode($decryptedResponse ?? '', true);
+
+        if (!$dataArray || !isset($dataArray['username'], $dataArray['password'])) {
+            return response()->json(['error' => 'Invalid data']);
+        }
+
+        // $usrName = $dataArray['username'];
+        // $password = $dataArray['password'];
+
+        $request = array(
+            'username' => $dataArray['username'],
+            'password' => $dataArray['password']
+        );
+
+        // Validate directly using the array, not the JSON string
+        $validator = Validator::make($request, [
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
@@ -86,11 +107,16 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // // If validation passes, you can continue processing
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Validation passed'
+        // ]);
 
 
+        $check_user = User::where('username', $request['username'])->first();
 
-        $check_user = User::where('username', $request->username)->first();
-
+      // return  response()->json(['retdata' => $check_user]);
 
         if (empty($check_user)) {
             return response()->json([
@@ -99,7 +125,7 @@ class AuthController extends Controller
         }
 
 
-        if (!Auth::attempt($request->only('username', 'password'))) {
+        if (!Auth::attempt($request)) {
             return response()->json([
                 'message' => 'Invalid login details'
             ], 401);
@@ -168,22 +194,25 @@ class AuthController extends Controller
                         "string_key" => "RailkalarangAmenities"
                     ];
 
-                    $encryptedResponse = $this->encryption($returndata);
+                    $encryptedResponse = encryption($returndata);
                     return ["return_response" => $encryptedResponse];
                 } else {
                     $returndata = ["status" => "ftso"];
-                    $encryptedResponse = $this->encryption($returndata);
+                    $encryptedResponse = encryption($returndata);
                     return ["return_response" => $encryptedResponse];
                 }
             } else {
                 $returndata = ["status" => "invm"];
-                $encryptedResponse = $this->encryption($returndata);
+                $encryptedResponse = encryption($returndata);
                 return ["return_response" => $encryptedResponse];
             }
         } else {
 
             $user = Auth::user();
             $token = $user->createToken('API_Token')->accessToken;
+
+               // Encrypt the token before returning it
+        $encryptedToken = encryption(['token' => $token]);
 
             return response()->json([
                 'token' => $token,

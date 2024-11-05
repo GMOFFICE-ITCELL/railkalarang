@@ -346,7 +346,7 @@ class documents_Controller extends Controller
         }
     }
 
-
+// ----------------------------------
     public function document_upload_lh_scre(Request $req, $encryptedData)
     {
 
@@ -368,9 +368,8 @@ class documents_Controller extends Controller
         $data = $this->decrypt_ang($encryptedData);
 
 
-        $b_id = 16;
-//        $b_id = $data['bid'];
-
+        // $b_id = 16;
+       $b_id = $data['bid'];
 
         $booking = BookingForm::query()
             ->where('BF_id', $b_id)->first();
@@ -407,27 +406,53 @@ class documents_Controller extends Controller
         }
     }
 
+
     public function document_upload_lh_scrm(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'lhscrmv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhscrmv')) {
-            $loc = "uploads";
-            $file = $req->file('lhscrmv');
-            $lhscrmv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhscrmv);
+        $filePath = $this->uploadFileAction->execute($req->file('lhscrmv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhscrmv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -436,27 +461,54 @@ class documents_Controller extends Controller
         }
     }
 
+
     public function document_upload_lh_scrov(Request $req, $encryptedData)
     {
+
+   $validator = Validator::make($req->all(), [
+            'lhscrov' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhscrov')) {
-            $loc = "uploads";
-            $file = $req->file('lhscrov');
-            $lhscrov = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhscrov);
+            $filePath = $this->uploadFileAction->execute($req->file('lhscrov'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhscrov
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -468,24 +520,51 @@ class documents_Controller extends Controller
     public function document_upload_lh_scrpov(Request $req, $encryptedData)
     {
 
+ $validator = Validator::make($req->all(), [
+            'lhscrpov' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhscrpov')) {
-            $loc = "uploads";
-            $file = $req->file('lhscrpov');
-            $lhscrpov = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhscrpov);
+            $filePath = $this->uploadFileAction->execute($req->file('lhscrpov'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhscrpov
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -493,27 +572,56 @@ class documents_Controller extends Controller
             return response()->json($this->encrypt_ang($dataret));
         }
     }
+
+
 
     public function document_upload_lh_sc_st(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'lhsc_stv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhsc_stv')) {
-            $loc = "uploads";
-            $file = $req->file('lhsc_stv');
-            $lhsc_stv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhsc_stv);
+            $filePath = $this->uploadFileAction->execute($req->file('lhsc_stv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhsc_stv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -522,26 +630,57 @@ class documents_Controller extends Controller
         }
     }
 
+
+
     public function document_upload_lh_obc(Request $req, $encryptedData)
     {
 
+  $validator = Validator::make($req->all(), [
+            'lhsc_obc' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
+
         if ($req->hasFile('lhsc_obc')) {
-            $loc = "uploads";
-            $file = $req->file('lhsc_obc');
-            $lhsc_obc = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhsc_obc);
+           $filePath = $this->uploadFileAction->execute($req->file('lhsc_obc'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhsc_obc
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -553,51 +692,110 @@ class documents_Controller extends Controller
     public function document_upload_lh_rpf(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'lhsc_rpf' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhsc_rpf')) {
-            $loc = "uploads";
-            $file = $req->file('lhsc_rpf');
-            $lhsc_rpf = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhsc_rpf);
 
-            $reg_data = [
-                'Letter_head' => $lhsc_rpf
-            ];
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $filePath = $this->uploadFileAction->execute($req->file('lhsc_rpf'), BookingForm::folder(), 'public');
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+ $booking->letter_head = $filePath;
+ $booking->save();
+
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
+
+
 
     public function document_upload_lalitha(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'lhsc_lalitha' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhsc_lalitha')) {
-            $loc = "uploads";
-            $file = $req->file('lhsc_lalitha');
-            $lhsc_lalitha = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhsc_lalitha);
+            $filePath = $this->uploadFileAction->execute($req->file('lhsc_lalitha'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'Letter_head' => $lhsc_lalitha
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -636,30 +834,59 @@ class documents_Controller extends Controller
 
     public function document_upload_lhrea(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'lhsc_rea' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('lhsc_rea')) {
-            $loc = "uploads";
-            $file = $req->file('lhsc_rea');
-            $lhsc_rea = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $lhsc_rea);
 
-            $reg_data = [
-                'Letter_head' => $lhsc_rea
-            ];
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $filePath = $this->uploadFileAction->execute($req->file('lhsc_rea'), BookingForm::folder(), 'public');
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+ $booking->letter_head = $filePath;
+ $booking->save();
+
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
 
@@ -667,82 +894,164 @@ class documents_Controller extends Controller
     {
 
 
+        $validator = Validator::make($req->all(), [
+            'afv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('afv')) {
-            $loc = "uploads";
-            $file = $req->file('afv');
-            $afv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $afv);
 
-            $reg_data = [
-                'aadhar_front' => $afv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('afv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $booking->letter_head = $filePath;
+ $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
+
+
 
     public function document_upload_ab(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'abv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('abv')) {
-            $loc = "uploads";
-            $file = $req->file('abv');
-            $abv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $abv);
 
-            $reg_data = [
-                'aadhar_back' => $abv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('abv'), BookingForm::folder(), 'public');
+
+ $booking->letter_head = $filePath;
+ $booking->save();
 
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
     public function document_upload_pf(Request $req, $encryptedData)
     {
 
+        $validator = Validator::make($req->all(), [
+            'pfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('pfv')) {
-            $loc = "uploads";
-            $file = $req->file('pfv');
-            $pfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $pfv);
+            $filePath = $this->uploadFileAction->execute($req->file('pfv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'pan_front' => $pfv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -753,25 +1062,50 @@ class documents_Controller extends Controller
 
     public function document_upload_bpfv(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'bpfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
 
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('bpfv')) {
-            $loc = "uploads";
-            $file = $req->file('bpfv');
-            $bpfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $bpfv);
+            $filePath = $this->uploadFileAction->execute($req->file('bpfv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'bank_passbook' => $bpfv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -782,185 +1116,389 @@ class documents_Controller extends Controller
 
     public function document_upload_uf(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'ufv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ufv')) {
-            $loc = "uploads";
-            $file = $req->file('ufv');
-            $ufv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ufv);
 
-            $reg_data = [
-                'umid_front' => $ufv
-            ];
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $filePath = $this->uploadFileAction->execute($req->file('ufv'), BookingForm::folder(), 'public');
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+ $booking->letter_head = $filePath;
+ $booking->save();
+
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
     public function document_upload_ub(Request $req, $encryptedData)
     {
         // Decrypt the data
+        $validator = Validator::make($req->all(), [
+            'ubv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ubv')) {
-            $loc = "uploads";
-            $file = $req->file('ubv');
-            $ubv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ubv);
 
-            $reg_data = [
-                'umid_back' => $ubv
-            ];
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+            $filePath = $this->uploadFileAction->execute($req->file('ubv'), BookingForm::folder(), 'public');
+
+            $booking->letter_head = $filePath;
+            $booking->save();
+
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
-        } else {
+            } else {
             $dataret = ['StatusResult' => 'Token Mismatch'];
             return response()->json($this->encrypt_ang($dataret));
-        }
+            }
     }
 
     public function document_upload_idf(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'idfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('idfv')) {
-            $loc = "uploads";
-            $file = $req->file('idfv');
-            $idfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $idfv);
 
-            $reg_data = [
-                'id_front' => $idfv
-            ];
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+            $filePath = $this->uploadFileAction->execute($req->file('idfv'), BookingForm::folder(), 'public');
+
+            $booking->letter_head = $filePath;
+            $booking->save();
+
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
-        } else {
+            } else {
             $dataret = ['StatusResult' => 'Token Mismatch'];
             return response()->json($this->encrypt_ang($dataret));
-        }
+            }
     }
 
     public function document_upload_idbv(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'idbv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('idbv')) {
-            $loc = "uploads";
-            $file = $req->file('idbv');
-            $idbv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $idbv);
 
-            $reg_data = [
-                'id_back' => $idbv
-            ];
+        $filePath = $this->uploadFileAction->execute($req->file('idbv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+        $booking->letter_head = $filePath;
+        $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
+
+        $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+        return response()->json($this->encrypt_ang($dataret));
         } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
+        $dataret = ['StatusResult' => 'Token Mismatch'];
+        return response()->json($this->encrypt_ang($dataret));
         }
     }
 
     public function document_upload_af_se(Request $req, $encryptedData)
     {
         // Decrypt the data
+        $validator = Validator::make($req->all(), [
+            'afv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('afv')) {
-            $loc = "uploads";
-            $file = $req->file('afv');
-            $afv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $afv);
 
-            $reg_data = [
-                'aadhar_front' => $afv
-            ];
+                $filePath = $this->uploadFileAction->execute($req->file('afv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+                $booking->letter_head = $filePath;
+                $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+                $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+                return response()->json($this->encrypt_ang($dataret));
+                } else {
+                $dataret = ['StatusResult' => 'Token Mismatch'];
+                return response()->json($this->encrypt_ang($dataret));
+                }
     }
 
     public function document_upload_ab_se(Request $req, $encryptedData)
     {
-        // Decrypt the data
-        $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+      // Decrypt the data
+      $validator = Validator::make($req->all(), [
+        'abv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation errors',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+
+    // Decrypt the data
+    $data = $this->decrypt_ang($encryptedData);
+
+
+    // $b_id = 16;
+   $b_id = $data['bid'];
+
+    $booking = BookingForm::query()
+        ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+    if (empty($booking)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'invalid Booking Id',
+            'errors' => $validator->errors()
+        ], 422);
+    }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('abv')) {
-            $loc = "uploads";
-            $file = $req->file('abv');
-            $abv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $abv);
+            $filePath = $this->uploadFileAction->execute($req->file('abv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'aadhar_back' => $abv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
-        } else {
+            } else {
             $dataret = ['StatusResult' => 'Token Mismatch'];
             return response()->json($this->encrypt_ang($dataret));
-        }
+            }
     }
 
     public function document_upload_uf_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'ufv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ufv')) {
-            $loc = "uploads";
-            $file = $req->file('ufv');
-            $ufv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ufv);
+            $filePath = $this->uploadFileAction->execute($req->file('ufv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'umid_front' => $ufv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -971,23 +1509,50 @@ class documents_Controller extends Controller
 
     public function document_upload_ub_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'ubv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ubv')) {
-            $loc = "uploads";
-            $file = $req->file('ubv');
-            $ubv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ubv);
+            $filePath = $this->uploadFileAction->execute($req->file('ubv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'umid_back' => $ubv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -998,104 +1563,219 @@ class documents_Controller extends Controller
 
     public function document_upload_ppfv_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'ppfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ppfv')) {
-            $loc = "uploads";
-            $file = $req->file('ppfv');
-            $ppfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ppfv);
 
-            $reg_data = [
-                'ppo_front' => $ppfv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('ppfv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $booking->letter_head = $filePath;
+ $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
     public function document_upload_ppbv_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'ppbv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('ppbv')) {
-            $loc = "uploads";
-            $file = $req->file('ppbv');
-            $ppbv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $ppbv);
 
-            $reg_data = [
-                'ppo_back' => $ppbv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('ppbv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $booking->letter_head = $filePath;
+ $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
     public function document_upload_afv_re(Request $req, $encryptedData)
     {
         // Decrypt the data
+        $validator = Validator::make($req->all(), [
+            'afv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('afv')) {
-            $loc = "uploads";
-            $file = $req->file('afv');
-            $afv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $afv);
 
-            $reg_data = [
-                'aadhar_front' => $afv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('afv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $booking->letter_head = $filePath;
+ $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
 
     public function document_upload_abv_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'abv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('abv')) {
-            $loc = "uploads";
-            $file = $req->file('abv');
-            $abv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $abv);
+            $filePath = $this->uploadFileAction->execute($req->file('abv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'aadhar_back' => $abv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1106,50 +1786,107 @@ class documents_Controller extends Controller
 
     public function document_upload_idfv_psu(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'idfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('idfv')) {
-            $loc = "uploads";
-            $file = $req->file('idfv');
-            $idfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $idfv);
 
-            $reg_data = [
-                'id_front' => $idfv
-            ];
+ $filePath = $this->uploadFileAction->execute($req->file('idfv'), BookingForm::folder(), 'public');
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+ $booking->letter_head = $filePath;
+ $booking->save();
 
-            return response()->json($this->encrypt_ang($dataret));
-        } else {
-            $dataret = ['StatusResult' => 'Token Mismatch'];
-            return response()->json($this->encrypt_ang($dataret));
-        }
+
+ $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
+
+ return response()->json($this->encrypt_ang($dataret));
+} else {
+ $dataret = ['StatusResult' => 'Token Mismatch'];
+ return response()->json($this->encrypt_ang($dataret));
+}
     }
+
 
     public function document_upload_idbv_psu(Request $req, $encryptedData)
     {
+           $validator = Validator::make($req->all(), [
+            'idbv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('idbv')) {
-            $loc = "uploads";
-            $file = $req->file('idbv');
-            $idbv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $idbv);
+            $filePath = $this->uploadFileAction->execute($req->file('idbv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'id_back' => $idbv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1160,23 +1897,50 @@ class documents_Controller extends Controller
 
     public function document_upload_afv_psu(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'afv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('afv')) {
-            $loc = "uploads";
-            $file = $req->file('afv');
-            $afv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $afv);
+            $filePath = $this->uploadFileAction->execute($req->file('afv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'aadhar_front' => $afv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1188,22 +1952,50 @@ class documents_Controller extends Controller
     public function document_upload_abv_psu(Request $req, $encryptedData)
     {
         // Decrypt the data
+        $validator = Validator::make($req->all(), [
+            'abv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('abv')) {
-            $loc = "uploads";
-            $file = $req->file('abv');
-            $abv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $abv);
+            $filePath = $this->uploadFileAction->execute($req->file('abv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'aadhar_back' => $abv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1214,23 +2006,50 @@ class documents_Controller extends Controller
 
     public function document_upload_bpfv_re(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'bpfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('bpfv')) {
-            $loc = "uploads";
-            $file = $req->file('bpfv');
-            $bpfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $bpfv);
+            $filePath = $this->uploadFileAction->execute($req->file('bpfv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'bank_passbook' => $bpfv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1239,25 +2058,55 @@ class documents_Controller extends Controller
         }
     }
 
+
     public function document_upload_bpfv_psu(Request $req, $encryptedData)
     {
         // Decrypt the data
+       $validator = Validator::make($req->all(), [
+            'bpfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('bpfv')) {
-            $loc = "uploads";
-            $file = $req->file('bpfv');
-            $bpfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $bpfv);
+            $filePath = $this->uploadFileAction->execute($req->file('bpfv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'bank_passbook' => $bpfv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1268,23 +2117,52 @@ class documents_Controller extends Controller
 
     public function document_upload_bpfv_se(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'bpfv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('bpfv')) {
             $loc = "uploads";
-            $file = $req->file('bpfv');
-            $bpfv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $bpfv);
+            $filePath = $this->uploadFileAction->execute($req->file('bpfv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'bank_passbook' => $bpfv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1295,23 +2173,50 @@ class documents_Controller extends Controller
 
     public function document_upload_dafv_psu(Request $req, $encryptedData)
     {
+        $validator = Validator::make($req->all(), [
+            'dafv' => 'required|file|mimes:jpg,jpeg,png', // Adjust file types and size as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
         // Decrypt the data
         $data = $this->decrypt_ang($encryptedData);
-        $b_id = $data['bid'];
+
+
+        // $b_id = 16;
+       $b_id = $data['bid'];
+
+        $booking = BookingForm::query()
+            ->where('BF_id', $b_id)->first();
+
+
+//        dd($booking);
+
+        if (empty($booking)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'invalid Booking Id',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         //  return $b_id;
         // Handle file upload
         if ($req->hasFile('dafv')) {
-            $loc = "uploads";
-            $file = $req->file('dafv');
-            $dafv = date("His") . rand(11111, 99999) . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->move($loc, $dafv);
+            $filePath = $this->uploadFileAction->execute($req->file('dafv'), BookingForm::folder(), 'public');
 
-            $reg_data = [
-                'dep_aadhar_front' => $dafv
-            ];
+            $booking->letter_head = $filePath;
+            $booking->save();
 
-            $insert = DB::table('Booking_Form')->where('BF_id', $b_id)->update($reg_data);
-            $dataret = ['StatusResult' => $insert ? 'success' : 'failure'];
+
+            $dataret = ['StatusResult' => $booking ? 'success' : 'failure', 'data' => $booking];
+
 
             return response()->json($this->encrypt_ang($dataret));
         } else {
@@ -1346,7 +2251,7 @@ class documents_Controller extends Controller
             return response()->json($this->encrypt_ang($dataret));
         }
     }
-
+// ---------------------------------------
     public function document_upload_dabv_re(Request $req, $encryptedData)
     {
         // Decrypt the data

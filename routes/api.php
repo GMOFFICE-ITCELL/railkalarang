@@ -47,7 +47,7 @@ use App\Http\Controllers\archivelist_Controller;
 //Route::post('log_user', [login_Controller::class, 'rk_login']);
 //Route::post('verify_amenity', [login_Controller::class, 'verifyamenityotp']);
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login']);
 Route::post('verify_amenity', [AuthController::class, 'verifyamenityotp']);
 
 
